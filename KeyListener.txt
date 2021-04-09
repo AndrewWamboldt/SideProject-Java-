@@ -1,0 +1,255 @@
+package TypingUserInterface;
+
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Frame;
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.util.HashMap;
+
+import javax.swing.AbstractButton;
+import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+
+public class NewGraphicUserInterface extends JFrame implements KeyListener {
+	JTextField textBox = new JTextField();
+	public JTextArea finalText = new JTextArea(5, 30);
+	JScrollPane scroll = new JScrollPane(finalText);
+	public JButton letterButton, period, space;
+	public String message;
+	public String[] msgArr;
+	public JButton clear = new JButton("Clear");
+	public JButton printButton = new JButton("Print");
+	public JButton gameButton = new JButton("Game");
+	HashMap<Integer, JButton> letterStorage = new HashMap<Integer, JButton>();
+
+	public NewGraphicUserInterface() {
+		JLabel topBar = new JLabel();
+		this.setTitle("New GUI");
+		this.setSize(500, 500);
+		this.setLocationRelativeTo(null);
+		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
+		this.setLayout(new GridLayout(4, 6));
+		createContents();
+		KeyListener keyListener = new KeyListener() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				int i = e.getKeyCode();
+				System.out.println(i);
+				if (letterStorage.containsKey(e.getKeyCode())) {
+					((JComponent) letterStorage.get(e.getKeyCode())).setBackground(Color.RED);
+					// ((JButton) letterStorage.get(letterButton)).doClick();
+				}
+				if (i == 32 || i == 46) {
+					((JComponent) letterStorage.get(e.getKeyCode())).setBackground(Color.RED);
+					// ((JButton) letterStorage.get(letterButton)).doClick();
+				}
+
+				if (e.getKeyCode() == 10) {
+
+					if (finalText.getText().equals("")) {
+						String oldTextInTextBox = textBox.getText();
+						finalText.setText(oldTextInTextBox);
+						textBox.setText("");
+					} else {
+						String textInFinalTextBox = finalText.getText();
+						String oldTextInTextBox = textBox.getText();
+						finalText.setText(textInFinalTextBox + '\n' + oldTextInTextBox);
+
+						textBox.setText("");
+					}
+
+				}
+			}
+
+			@Override
+			public void keyReleased(KeyEvent e) {
+				int i = e.getKeyCode();
+				System.out.println(i);
+				if (letterStorage.containsKey(e.getKeyCode())) {
+					((JComponent) letterStorage.get(e.getKeyCode())).setBackground(new JButton().getBackground());
+					// ((JButton) letterStorage.get(letterButton)).doClick();
+				}
+
+			}
+
+			@Override
+			public void keyTyped(KeyEvent arg0) {
+				// TODO Auto-generated method stub
+
+			}
+		};
+		textBox.addKeyListener(keyListener);
+		this.setVisible(true);
+	}
+
+	public void createContents() {
+		JPanel centerPanel = new JPanel();
+		JPanel bottomPanel = new JPanel();
+		JPanel middlePanel = new JPanel();
+		JPanel FinalText = new JPanel();
+		for (int i = (int) 'a'; i <= (int) 'z'; i++) {
+
+			JButton letterButton = new JButton(Character.toString((char) i));
+			System.out.print((char) i);
+			letterStorage.put(i - 32, letterButton);
+			centerPanel.setLayout(new GridLayout(4, 6));
+
+			letterButton.addActionListener(new ButtonsListener());
+
+			centerPanel.add(letterButton);
+		}
+
+		space = new JButton("__");
+		period = new JButton(".");
+		letterStorage.put(32, space);
+		letterStorage.put(46, period);
+		centerPanel.add(space);
+		centerPanel.add(period);
+		add(centerPanel, new BorderLayout().NORTH);
+		textBox.setPreferredSize(new Dimension(475, 40));
+		textBox.addActionListener(new TextBoxListener());
+		middlePanel.add(textBox, new BorderLayout().CENTER);
+		clear.setPreferredSize(new Dimension(100, 100));
+		gameButton.setPreferredSize(new Dimension(100, 100));
+		printButton.setPreferredSize(new Dimension(100, 100));
+		bottomPanel.add(printButton, new BorderLayout().SOUTH);
+		bottomPanel.add(clear, new BorderLayout().SOUTH);
+		bottomPanel.add(gameButton, new BorderLayout().SOUTH);
+		clear.addActionListener(new ClearListener());
+		printButton.addActionListener(new PrintListener());
+		gameButton.addActionListener(new GameListener());
+		add(middlePanel);
+		scroll.setPreferredSize(new Dimension(475, 100));
+		scroll.isEnabled();
+		FinalText.add(scroll);
+		add(FinalText, new BorderLayout().SOUTH);
+		add(bottomPanel);
+
+	}
+
+	public class keyPressed implements ActionListener {
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			((Frame) e.getSource()).getTitle();
+
+		}
+
+	}
+
+	public class ButtonsListener implements ActionListener {
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+
+			if (!(textBox.getText() == null)) {
+				String currentOutput = textBox.getText().toString();
+				textBox.setText(currentOutput + ((AbstractButton) e.getSource()).getText());
+			} else {
+				textBox.setText(letterButton.getText().toString());
+			}
+
+		}
+
+	}
+
+	public class TextBoxListener implements ActionListener {
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+
+			// System.out.println(e.getSource());
+
+		}
+
+	}
+
+	public class ClearListener implements ActionListener {
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			// textBox.getText().toLowerCase().contains("Clear")) {
+			textBox.setText("");
+		}
+	}
+
+	public class GameListener implements ActionListener {
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			KeyListenerTutorial game = new KeyListenerTutorial();
+			add(game);
+		}
+	}
+
+	public class PrintListener implements ActionListener {
+
+		public void actionPerformed(ActionEvent e) {
+			// this.setVisible(false);
+			PrintInterface print = new PrintInterface();
+			JPanel printPanel = new JPanel();
+			JTextArea finalTextArea = new JTextArea();
+
+			// int lines = finalTextArea.getLineCount();
+//			try {
+//				for(int i =0; i < lines; i++) {
+//					int start = finalTextArea.getLineStartOffset(i);
+//					int end = finalTextArea.getLineEndOffset(i);
+//					
+//				}
+//					}
+			finalTextArea.setPreferredSize(new Dimension(400, 145));
+			String[] linesStorage = null;
+			int i = 0;
+			for (String line : finalText.getText().split("\\n")) {
+				System.out.println(line);
+				if (line.length() >= 30) {
+					// line.split(line, 30);
+					// linesStorage[i] = line;
+					// finalTextArea.setText();
+					finalTextArea.setLineWrap(true);
+					i++;
+					// finalTextArea.getLineWrap();
+				}
+			}
+			finalTextArea.setText(finalText.getText());
+			printPanel.add(finalTextArea, new BorderLayout().CENTER);
+			print.add(printPanel);
+			// print.isVisible();
+
+		}
+	}
+
+	public void keyPressed(KeyEvent e) {
+		int i = e.getKeyCode();
+		System.out.println(i);
+
+	}
+
+	public void keyReleased(KeyEvent arg0) {
+		// TODO Auto-generated method stub
+
+	}
+
+	public void keyTyped(KeyEvent arg0) {
+		// TODO Auto-generated method stub
+
+	}
+
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		new NewGraphicUserInterface();
+	}
+
+}
